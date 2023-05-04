@@ -1,3 +1,4 @@
+// Import all components and libraries to be used
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
@@ -6,11 +7,12 @@ import Geolocation from '@react-native-community/geolocation';
 const API_KEY = '014729232ad452ec894ac0008a4cc243';
 
 const WeatherApp = () => {
+  // Define all required state variables
   const [weather, setWeather] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-        // Geolocation.getCurrentPosition(info => console.log(info));
+        // Get Current Location data
         Geolocation.getCurrentPosition(
           info => {
             console.log("info");
@@ -18,6 +20,7 @@ const WeatherApp = () => {
             console.log("location");
             console.log(info.coords.latitude);
             
+            // Get Weather data of Current location using API call
             (async () => {
 
             try {
@@ -32,7 +35,9 @@ const WeatherApp = () => {
                 minTemp: response.data.main.temp_min,
                 maxTemp: response.data.main.temp_max,
               });
-            } catch (error) {
+            }
+            // If error make the variable empty 
+            catch (error) {
               console.log(error);
               setWeather({});
             }
@@ -45,7 +50,10 @@ const WeatherApp = () => {
     
   }, []);
 
+  // Function to handle event when user clicks on Get Weather button
   const getWeather = async () => {
+
+    // Get Weather data of user given location using API call
     try {
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${API_KEY}&units=metric`
@@ -58,12 +66,15 @@ const WeatherApp = () => {
         minTemp: response.data.main.temp_min,
         maxTemp: response.data.main.temp_max,
       });
-    } catch (error) {
+    } 
+    // If error make the variable empty 
+    catch (error) {
       console.log(error);
       setWeather({});
     }
   };
 
+  // Styles for all components
   const styles = StyleSheet.create({
     container: {
       flex: 1,
