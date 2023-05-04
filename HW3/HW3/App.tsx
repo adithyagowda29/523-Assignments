@@ -1,0 +1,121 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import axios from 'axios';
+import Geolocation from '@react-native-community/geolocation';
+
+const API_KEY = '014729232ad452ec894ac0008a4cc243';
+
+const WeatherApp = () => {
+  const [weather, setWeather] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+        // Geolocation.getCurrentPosition(info => console.log(info));
+        Geolocation.getCurrentPosition(
+          info => {
+            console.log("info");
+            console.log(info);
+            console.log("location");
+            console.log(info.coords.latitude);
+            
+            (async () => {
+
+            try {
+              const response = await axios.get(
+                `https://api.openweathermap.org/data/2.5/weather?lat=${info.coords.latitude}&lon=${info.coords.longitude}&appid=${API_KEY}&units=metric`
+              );
+              console.log(response);
+              setWeather({
+                city: response.data.name,
+                currentTemp: response.data.main.temp,
+                condition: response.data.weather[0].description,
+                minTemp: response.data.main.temp_min,
+                maxTemp: response.data.main.temp_max,
+              });
+            } catch (error) {
+              console.log(error);
+              setWeather({});
+            }
+          })();
+
+          },
+          error => console.log(error)
+        );
+        
+    
+  }, []);
+
+  const getWeather = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${API_KEY}&units=metric`
+      );
+      console.log(response);
+      setWeather({
+        city: response.data.name,
+        currentTemp: response.data.main.temp,
+        condition: response.data.weather[0].description,
+        minTemp: response.data.main.temp_min,
+        maxTemp: response.data.main.temp_max,
+      });
+    } catch (error) {
+      console.log(error);
+      setWeather({});
+    }
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      marginTop: 40,
+    },
+    search: {
+      padding: 10,
+      margin: 10,
+      fontSize: 20,
+      borderWidth: 1,
+      borderRadius: 10,
+    },
+    button: {
+      alignItems: 'center',
+      marginTop: 20,
+      marginBottom: 40,
+      borderWidth: 1,
+      borderRadius: 10,
+    },
+    text: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: 'white',
+      textAlign: 'center',
+    },
+    text_heading: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: 'white',
+      textAlign: 'center',
+      paddingBottom: 40,
+    },
+  });
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text_heading}>WEATHER DATA</Text>
+      <Text style={styles.text}>CITY: {weather.city || 'N/A'}</Text>
+      <Text style={styles.text}>CURRENT TEMP: {weather.currentTemp || 'N/A'}</Text>
+      <Text style={styles.text}>CONDITION: {weather.condition || 'N/A'}</Text>
+      <Text style={styles.text}>MIN TEMP: {weather.minTemp || 'N/A'}</Text>
+      <Text style={styles.text}>MAX TEMP: {weather.maxTemp || 'N/A'}</Text>
+      <TextInput
+        placeholder="Enter a location"
+        style={styles.search}
+        onChangeText={(text) => setSearchTerm(text)}
+        value={searchTerm}
+      />
+      <Button title="Get Weather" style={styles.button} onPress={getWeather} />
+    </View>
+  );
+};
+
+export default WeatherApp;
