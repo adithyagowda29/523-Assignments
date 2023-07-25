@@ -4,7 +4,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
 
-const API_KEY = '014729232ad452ec894ac0008a4cc243';
+const API_KEY = ''; #Add your API key here
 
 const WeatherApp = () => {
   // Define all required state variables
